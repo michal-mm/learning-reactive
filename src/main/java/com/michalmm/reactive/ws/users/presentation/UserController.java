@@ -4,7 +4,9 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,21 @@ public class UserController {
 				.map( userRest -> ResponseEntity.status(HttpStatus.CREATED)
 						.location(URI.create("/users/" + userRest.getId()) )
 						.body(userRest) );
+	}
+	
+	/* 
+	 * simple and fast operation so it doesn't have to be reactive and
+	 * can stay in plain old synchronous way for input
+	 * but returns in non-blocking way the response
+	 */
+	@GetMapping("/{userId}")
+	public Mono<UserRest> getUser(@PathVariable("userId") UUID userId) {
+		return Mono.just(new UserRest (
+				userId,
+				"Michal",
+				"Kichal",
+				"adres@email.com"
+				));
 	}
 
 }
