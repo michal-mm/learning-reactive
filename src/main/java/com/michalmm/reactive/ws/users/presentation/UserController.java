@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,13 +57,18 @@ public class UserController {
 	 * but returns in non-blocking way the response
 	 */
 	@GetMapping("/{userId}")
-	public Mono<UserRest> getUser(@PathVariable("userId") UUID userId) {
-		return Mono.just(new UserRest (
-				userId,
-				"Michal",
-				"Kichal",
-				"adres@email.com"
-				));
+	public Mono<ResponseEntity<UserRest>> getUser(@PathVariable("userId") UUID userId) {
+		
+		return userService.getUserById(userId)
+				.map(userRest -> ResponseEntity.status(HttpStatus.OK).body(userRest))
+				.switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
+		
+//		return Mono.just(new UserRest (
+//				userId,
+//				"Michal",
+//				"Kichal",
+//				"adres@email.com"
+//				));
 	}
 	
 	

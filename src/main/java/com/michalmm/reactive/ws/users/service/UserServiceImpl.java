@@ -1,5 +1,7 @@
 package com.michalmm.reactive.ws.users.service;
 
+import java.util.UUID;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,14 @@ public class UserServiceImpl implements UserService {
 		return createUserRequestMono
 				.mapNotNull(this::convertToEntity)
 				.flatMap(userRepository::save)
-				.mapNotNull(this::converToRest);
+				.mapNotNull(this::convertToRest);
+	}
+	
+	@Override
+	public Mono<UserRest> getUserById(UUID id) {
+		return userRepository
+				.findById(id)
+				.mapNotNull(this::convertToRest);
 	}
 
 	
@@ -38,7 +47,7 @@ public class UserServiceImpl implements UserService {
 		return userEntity;
 	}
 	
-	private UserRest converToRest(UserEntity userEntity) {
+	private UserRest convertToRest(UserEntity userEntity) {
 		UserRest userRest = new UserRest();
 		BeanUtils.copyProperties(userEntity, userRest);
 		
