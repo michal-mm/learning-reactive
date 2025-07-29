@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -45,6 +46,21 @@ public class UserController {
 				"Kichal",
 				"adres@email.com"
 				));
+	}
+	
+	
+	/**
+	 * returns a "stream" - Flux - of UserRest Objects
+	 * non-blocking
+	 * @return
+	 */
+	@GetMapping()
+	public Flux<UserRest> getUsers() {
+		return Flux.just(
+				new UserRest(UUID.randomUUID(), "Michal", "Kichal", "na.adres@email.com"),
+				new UserRest(UUID.randomUUID(), "Palka", "Zapalka", "dwa.kije@kto.to"),
+				new UserRest(UUID.randomUUID(), "Ostatni", "Kibic", "na.parapecie@zmienie.cie")
+				);
 	}
 
 }
