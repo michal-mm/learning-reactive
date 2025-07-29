@@ -4,12 +4,13 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -55,7 +56,8 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping()
-	public Flux<UserRest> getUsers() {
+	public Flux<UserRest> getUsers(@RequestParam(value="offset", defaultValue="0") int offset, 
+									@RequestParam(value="limit", defaultValue="50") int limit) {
 		return Flux.just(
 				new UserRest(UUID.randomUUID(), "Michal", "Kichal", "na.adres@email.com"),
 				new UserRest(UUID.randomUUID(), "Palka", "Zapalka", "dwa.kije@kto.to"),
