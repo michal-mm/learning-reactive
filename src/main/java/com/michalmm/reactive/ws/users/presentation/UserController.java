@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono;
 public class UserController {
 
 	@PostMapping
-	public void createUser(@RequestBody Mono<CreateUserRequest> createUserRequest) {
+	public void createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
 		
 	}
 
