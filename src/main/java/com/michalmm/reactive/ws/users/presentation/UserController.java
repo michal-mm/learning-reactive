@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.michalmm.reactive.ws.users.service.UserService;
+
 import jakarta.validation.Valid;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,18 +22,32 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+	
+	private final UserService userService;
+	
+	
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
+	
 	@PostMapping
 //	@ResponseStatus(HttpStatus.CREATED)
 	public Mono<ResponseEntity<UserRest>> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
 
-		return createUserRequest.map(request -> new UserRest(UUID.randomUUID(),
-													request.getFirstName(),
-													request.getLastName(),
-													request.getEmail()))
-				.map( userRest -> ResponseEntity.status(HttpStatus.CREATED)
-						.location(URI.create("/users/" + userRest.getId()) )
-						.body(userRest) );
+		return userService.createUser(createUserRequest)
+				.map(userRest -> ResponseEntity
+								.status(HttpStatus.CREATED)
+								.location(URI.create("/users/" + userRest.getId()))
+								.body(userRest));
+		
+//		return createUserRequest.map(request -> new UserRest(UUID.randomUUID(),
+//													request.getFirstName(),
+//													request.getLastName(),
+//													request.getEmail()))
+//				.map( userRest -> ResponseEntity.status(HttpStatus.CREATED)
+//						.location(URI.create("/users/" + userRest.getId()) )
+//						.body(userRest) );
 	}
 	
 	/* 
