@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+
 public class CreateUserRequest {
 
 	@NotBlank(message="First name can't be empty")
@@ -19,7 +20,7 @@ public class CreateUserRequest {
 	private String email;
 	
 	@NotBlank(message="Password can't be empty")
-	@Size(min=8, max=16, message="passsword has to have between 8 and 16 characters")
+	@Size(min=8, max=16, message="passsword has to have between 8 and 16 characters!")
 	private String password;
 	
 	public CreateUserRequest () {}
