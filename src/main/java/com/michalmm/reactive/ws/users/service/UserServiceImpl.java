@@ -4,9 +4,12 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.michalmm.reactive.ws.users.data.UserEntity;
 import com.michalmm.reactive.ws.users.data.UserRepository;
@@ -32,7 +35,9 @@ public class UserServiceImpl implements UserService {
 		return createUserRequestMono
 				.mapNotNull(this::convertToEntity)
 				.flatMap(userRepository::save)
-				.mapNotNull(this::convertToRest);
+				.mapNotNull(this::convertToRest)
+				.onErrorMap(DuplicateKeyException.class, 
+							exception -> new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage()));
 	}
 	
 	@Override
