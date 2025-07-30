@@ -41,6 +41,6 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(BadCredentialsException.class)
 	public Mono<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
-		return Mono.just(ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, ex.getMessage()).build());
+		return Mono.just(ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, "!!!"+ex.getMessage()).build());
 	}
 }
