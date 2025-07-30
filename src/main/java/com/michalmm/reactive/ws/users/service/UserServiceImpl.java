@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,8 +37,14 @@ public class UserServiceImpl implements UserService {
 				.mapNotNull(this::convertToEntity)
 				.flatMap(userRepository::save)
 				.mapNotNull(this::convertToRest)
-				.onErrorMap(DuplicateKeyException.class, 
-							exception -> new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage()));
+				.onErrorMap(throwable -> {
+					if (throwable instanceof DuplicateKeyException)
+						return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
+					else if (throwable instanceof DataIntegrityViolationException)
+						return new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage());
+					else
+						return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage());
+					});				
 	}
 	
 	@Override
