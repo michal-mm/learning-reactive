@@ -1,4 +1,4 @@
-package com.michalmm.reactive.ws.users.presentation;
+package com.michalmm.reactive.ws.users.presentation.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

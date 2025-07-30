@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.michalmm.reactive.ws.users.presentation.model.CreateUserRequest;
+import com.michalmm.reactive.ws.users.presentation.model.UserRest;
 import com.michalmm.reactive.ws.users.service.UserService;
 
 import jakarta.validation.Valid;

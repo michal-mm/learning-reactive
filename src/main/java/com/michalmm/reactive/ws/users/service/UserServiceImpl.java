@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.michalmm.reactive.ws.users.data.UserEntity;
 import com.michalmm.reactive.ws.users.data.UserRepository;
-import com.michalmm.reactive.ws.users.presentation.CreateUserRequest;
-import com.michalmm.reactive.ws.users.presentation.UserRest;
+import com.michalmm.reactive.ws.users.presentation.model.CreateUserRequest;
+import com.michalmm.reactive.ws.users.presentation.model.UserRest;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
