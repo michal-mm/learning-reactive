@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,13 +77,15 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping()
-	public Flux<UserRest> getUsers(@RequestParam(value="offset", defaultValue="0") int offset, 
+	public Flux<UserRest> getUsers(@RequestParam(value="page", defaultValue="0") int page, 
 									@RequestParam(value="limit", defaultValue="50") int limit) {
-		return Flux.just(
-				new UserRest(UUID.randomUUID(), "Michal", "Kichal", "na.adres@email.com"),
-				new UserRest(UUID.randomUUID(), "Palka", "Zapalka", "dwa.kije@kto.to"),
-				new UserRest(UUID.randomUUID(), "Ostatni", "Kibic", "na.parapecie@zmienie.cie")
-				);
+//		return Flux.just(
+//				new UserRest(UUID.randomUUID(), "Michal", "Kichal", "na.adres@email.com"),
+//				new UserRest(UUID.randomUUID(), "Palka", "Zapalka", "dwa.kije@kto.to"),
+//				new UserRest(UUID.randomUUID(), "Ostatni", "Kibic", "na.parapecie@zmienie.cie")
+//				);
+		
+		return userService.findAll(page, limit);
 	}
 
 }
