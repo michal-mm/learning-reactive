@@ -4,13 +4,10 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.michalmm.reactive.ws.users.data.UserEntity;
 import com.michalmm.reactive.ws.users.data.UserRepository;
@@ -19,6 +16,7 @@ import com.michalmm.reactive.ws.users.presentation.UserRest;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,15 +24,19 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private final UserRepository userRepository;
 	
-	public UserServiceImpl(UserRepository userRepository) {
-		this.userRepository = userRepository;}
+	private final PasswordEncoder passwordEncoder;
+	
+	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	public Mono<UserRest> createUser(Mono<CreateUserRequest> createUserRequestMono) {
 		// create user entity object
 		
 		return createUserRequestMono
-				.mapNotNull(this::convertToEntity)
+				.flatMap(this::convertToEntity)
 				.flatMap(userRepository::save)
 				.mapNotNull(this::convertToRest);
 //				.onErrorMap(throwable -> {
@@ -66,11 +68,14 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	
-	private UserEntity convertToEntity(CreateUserRequest createUserRequest) {
-		UserEntity userEntity = new UserEntity();
-		BeanUtils.copyProperties(createUserRequest, userEntity);
-		
-		return userEntity;
+	private Mono<UserEntity> convertToEntity(CreateUserRequest createUserRequest) {
+		return Mono.fromCallable(() -> {
+			UserEntity userEntity = new UserEntity();
+			BeanUtils.copyProperties(createUserRequest, userEntity);
+			userEntity.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+			
+			return userEntity;
+		}).subscribeOn(Schedulers.boundedElastic());
 	}
 	
 	private UserRest convertToRest(UserEntity userEntity) {
