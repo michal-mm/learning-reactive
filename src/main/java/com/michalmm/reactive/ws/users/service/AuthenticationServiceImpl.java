@@ -23,10 +23,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	
 	
-	public AuthenticationServiceImpl(ReactiveAuthenticationManager reactiveAuthenticationManager) {
+	public AuthenticationServiceImpl(ReactiveAuthenticationManager reactiveAuthenticationManager,
+						UserRepository userRespoitory) {
 		super();
 		this.reactiveAuthenticationManager = reactiveAuthenticationManager;
-		this.userRepository = null;
+		this.userRepository = userRespoitory;
 	}
 
 	@Override
