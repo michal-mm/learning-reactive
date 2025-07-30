@@ -1,11 +1,14 @@
 package com.michalmm.reactive.ws.users.service;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +68,17 @@ public class UserServiceImpl implements UserService {
 		
 		return userRepository.findAllBy(pageable)
 				.map(userEntity -> convertToRest(userEntity));
+	}
+	
+	
+	@Override
+	public Mono<UserDetails> findByUsername(String username) {
+		return userRepository.findByEmail(username)
+				.map(userEntity -> User
+						.withUsername(userEntity.getEmail())
+						.password(userEntity.getPassword())
+						.authorities(new ArrayList<>())
+						.build());
 	}
 	
 	
