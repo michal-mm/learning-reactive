@@ -10,8 +10,10 @@ import javax.crypto.SecretKey;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import reactor.core.publisher.Mono;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -40,6 +42,24 @@ public class JwtServiceImpl implements JwtService {
 	}
 
 	
+	@Override
+	public Mono<Boolean> validateJwt(String token) {
+		return Mono.just(token)
+				.map(jwt -> parseToken(jwt))
+				.map(claims -> !claims.getExpiration().before(new Date()))
+				.onErrorReturn(false);
+	}
+	
+	
+	private Claims parseToken(String token) {
+		return Jwts.parser()
+				.verifyWith(getSigningKey())
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
+	}
+	
+	
 	private SecretKey getSigningKey() {
 		
 		return Optional.ofNullable(environment.getProperty("token.secret"))
@@ -48,4 +68,7 @@ public class JwtServiceImpl implements JwtService {
 				.orElseThrow(() -> 
 					new IllegalArgumentException("token.secret must be configured in the application.properties file"));
 	}
+
 }
+
+
