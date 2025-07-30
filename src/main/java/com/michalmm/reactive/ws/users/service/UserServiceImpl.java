@@ -36,15 +36,15 @@ public class UserServiceImpl implements UserService {
 		return createUserRequestMono
 				.mapNotNull(this::convertToEntity)
 				.flatMap(userRepository::save)
-				.mapNotNull(this::convertToRest)
-				.onErrorMap(throwable -> {
-					if (throwable instanceof DuplicateKeyException)
-						return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
-					else if (throwable instanceof DataIntegrityViolationException)
-						return new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage());
-					else
-						return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage());
-					});				
+				.mapNotNull(this::convertToRest);
+//				.onErrorMap(throwable -> {
+//					if (throwable instanceof DuplicateKeyException)
+//						return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
+//					else if (throwable instanceof DataIntegrityViolationException)
+//						return new ResponseStatusException(HttpStatus.BAD_REQUEST, throwable.getMessage());
+//					else
+//						return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, throwable.getMessage());
+//					});				
 	}
 	
 	@Override
