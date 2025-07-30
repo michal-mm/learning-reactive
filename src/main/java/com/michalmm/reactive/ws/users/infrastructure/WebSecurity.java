@@ -16,9 +16,9 @@ public class WebSecurity {
 	@Bean
 	public SecurityWebFilterChain httpSecurityFilterChain(ServerHttpSecurity http) {
 		return http
-				.authorizeExchange(exchanges -> 
-						exchanges.pathMatchers(HttpMethod.POST, "/users")
-				.permitAll()
+				.authorizeExchange(exchanges -> exchanges
+						.pathMatchers(HttpMethod.POST, "/users").permitAll()
+						.pathMatchers(HttpMethod.POST, "/login").permitAll()
 				.anyExchange().authenticated())
 				// CSFR is disabled if the service is stateless and doesn't use cookies,
 				// however, for services that APIs are called directly from the browser
