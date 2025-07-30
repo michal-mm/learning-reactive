@@ -51,6 +51,13 @@ public class JwtServiceImpl implements JwtService {
 	}
 	
 	
+	@Override
+	public String extractTokenSubject(String token) {
+		return parseToken(token)
+				.getSubject();
+	}
+	
+	
 	private Claims parseToken(String token) {
 		return Jwts.parser()
 				.verifyWith(getSigningKey())

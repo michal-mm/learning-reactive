@@ -47,11 +47,12 @@ public class JwtAuthenicationFilter implements WebFilter {
 
 
 	private Mono<Void> authenticateAndContinue(String token, ServerWebExchange exchange, WebFilterChain chain) {
-		return Mono.just("extractTokenSubject()")
+		return Mono.just(jwtService.extractTokenSubject(token))
 				.flatMap(subject -> {
 					Authentication auth = new UsernamePasswordAuthenticationToken(subject, null, 
 							Collections.emptyList());
-					return chain.filter(exchange)
+					return chain
+							.filter(exchange)
 							.contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
 				});
 	}
