@@ -1,9 +1,11 @@
 package com.michalmm.reactive.ws.users.presentation;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -91,6 +93,12 @@ public class UserController {
 //				);
 		
 		return userService.findAll(page, limit);
+	}
+	
+	@GetMapping(value="/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<String> streamUsers() {
+		return Flux.interval(Duration.ofSeconds(1))
+				.map(sequence -> "Event " + sequence);
 	}
 
 }

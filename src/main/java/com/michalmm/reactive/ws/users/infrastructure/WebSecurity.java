@@ -30,6 +30,7 @@ public class WebSecurity {
 				.authorizeExchange(exchanges -> exchanges
 						.pathMatchers(HttpMethod.POST, "/users").permitAll()
 						.pathMatchers(HttpMethod.POST, "/login").permitAll()
+						.pathMatchers(HttpMethod.GET, "/users/stream").permitAll()
 				.anyExchange().authenticated())
 				// CSFR is disabled if the service is stateless and doesn't use cookies,
 				// however, for services that APIs are called directly from the browser
