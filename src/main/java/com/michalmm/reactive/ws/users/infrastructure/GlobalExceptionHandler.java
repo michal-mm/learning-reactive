@@ -4,7 +4,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,5 +44,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(BadCredentialsException.class)
 	public Mono<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
 		return Mono.just(ErrorResponse.builder(ex, HttpStatus.UNAUTHORIZED, "!!!"+ex.getMessage()).build());
+	}
+	
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public Mono<ErrorResponse> authorizationDeniedException(AuthorizationDeniedException ex) {
+		return Mono.just(ErrorResponse.builder(ex, HttpStatus.FORBIDDEN, ex.getLocalizedMessage()).build());
 	}
 }
