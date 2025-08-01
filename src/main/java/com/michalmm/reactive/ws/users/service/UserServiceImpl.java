@@ -19,6 +19,7 @@ import com.michalmm.reactive.ws.users.presentation.model.UserRest;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
 @Service
@@ -29,9 +30,15 @@ public class UserServiceImpl implements UserService {
 	
 	private final PasswordEncoder passwordEncoder;
 	
-	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	private final Sinks.Many<UserRest> userSink;
+	
+	
+	public UserServiceImpl(UserRepository userRepository, 
+			PasswordEncoder passwordEncoder,
+			Sinks.Many<UserRest> userSink) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.userSink = userSink;
 	}
 
 	@Override
@@ -41,7 +48,8 @@ public class UserServiceImpl implements UserService {
 		return createUserRequestMono
 				.flatMap(this::convertToEntity)
 				.flatMap(userRepository::save)
-				.mapNotNull(this::convertToRest);
+				.mapNotNull(this::convertToRest)
+				.doOnSuccess(savedUser -> userSink.tryEmitNext(savedUser));
 //				.onErrorMap(throwable -> {
 //					if (throwable instanceof DuplicateKeyException)
 //						return new ResponseStatusException(HttpStatus.CONFLICT, throwable.getMessage());
@@ -82,6 +90,14 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	
+	@Override
+	public Flux<UserRest> streamUser() {
+		return userSink.asFlux()
+				.publish()
+				.autoConnect();
+	}
+	
+	
 	private Mono<UserEntity> convertToEntity(CreateUserRequest createUserRequest) {
 		return Mono.fromCallable(() -> {
 			UserEntity userEntity = new UserEntity();
@@ -98,5 +114,7 @@ public class UserServiceImpl implements UserService {
 		
 		return userRest;
 	}
+
+
 
 }
