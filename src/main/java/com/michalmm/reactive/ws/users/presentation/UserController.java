@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,9 +64,10 @@ public class UserController {
 	@GetMapping("/{userId}")
 //	@PreAuthorize("authentication.principal.equals(#userId.toString()) or hasRole('ROLE_ADMIN')")
 	@PostAuthorize("returnObject.body!=null and (returnObject.body.id.toString().equals(#userId.toString()))")
-	public Mono<ResponseEntity<UserRest>> getUser(@PathVariable("userId") UUID userId) {
-		
-		return userService.getUserById(userId)
+	public Mono<ResponseEntity<UserRest>> getUser(@PathVariable("userId") UUID userId,
+			@RequestParam(name = "include", required = false) String include,
+			@RequestHeader(name="Authorization") String jwt) {
+		return userService.getUserById(userId, include, jwt)
 				.map(userRest -> ResponseEntity.status(HttpStatus.OK).body(userRest))
 				.switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
 		
